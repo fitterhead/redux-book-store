@@ -1,4 +1,10 @@
-import { setBooksTo, setErrorMessageTo, setLoadingTo, setPageNumTo, setQueryTo } from "../service/books/slice";
+import {
+  setErrorMessageTo,
+  setLoadingTo,
+  setPageNumTo,
+  setQueryTo,
+} from "../service/books/slice";
+import { setBooksTo } from "../service/books/slice";
 import React, { useState, useEffect } from "react";
 import { ClipLoader } from "react-spinners";
 import { useNavigate } from "react-router-dom";
@@ -35,44 +41,29 @@ const HomePage = () => {
   const handleClickBook = (bookId) => {
     navigate(`/books/${bookId}`);
   };
-  const books = useSelector((state) => state.books)
-  const pageNum = useSelector((state) => state.pageNum)
-  const query = useSelector((state) => state.query)
-  const limit = useSelector((state) => state.limit)
-  const loading = useSelector((state) => state.loading)
-  const errorMessage = useSelector((state) => state.errorMessage)
+  const books = useSelector((state) => state.books.books);
+  const status = useSelector((state) => state.books.status);
+  const booksarray = useSelector((state) => state.books);
 
-  const setBooks = (value) => dispatch(setBooksTo(value))
-  const setErrorMessage = (value) => dispatch(setErrorMessageTo(value))
-  const setLoading = (value) => dispatch(setLoadingTo(value))
-  const setQuery = (value) => dispatch(setQueryTo(value))
+  if (status === "working") {
+    console.log(books, "books array");
+    console.log(booksarray, "books arrayyyy");
+  }
+
+  const pageNum = useSelector((state) => state.books.pageNum);
+  const query = useSelector((state) => state.books.query);
+  const limit = useSelector((state) => state.books.limit);
+  const loading = useSelector((state) => state.books.loading);
+  const errorMessage = useSelector((state) => state.books.errorMessage);
+
+  // const setBooks = (value) => dispatch(setBooksTo(value))
+  const setErrorMessage = (value) => dispatch(setErrorMessageTo(value));
+  const setLoading = (value) => dispatch(setLoadingTo(value));
+  const setQuery = (value) => dispatch(setQueryTo(value));
 
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      //dispatch(setLoading(true))
-      //in slice.js:
-      //setLoading: (state,action) => {...}
-      try {
-        let url = `/books?_page=${pageNum}&_limit=${limit}`;
-        if (query) url += `&q=${query}`;
-        const res = await api.get(url);
-        console.log(res, "dataaaa");
-
-        setBooks(res.data);
-
-        setErrorMessage("");
-      } catch (error) {
-        setErrorMessage(error.message);
-      }
-      setLoading(false);
-    };
-    fetchData();
-  }, [pageNum, limit, query]);
-
-  //--------------form
-
-
+    dispatch(setBooksTo({ pageNum, limit, query }));
+  }, [dispatch, pageNum, limit, query, books]);
 
   const defaultValues = {
     searchQuery: "",
@@ -85,9 +76,7 @@ const HomePage = () => {
     setQuery(data.searchQuery);
     // const onSubmit = {() => dispatch (setQuery(data))}
 
-
-      //--------------form
-
+    //--------------form
   };
   return (
     <Container>
@@ -108,13 +97,13 @@ const HomePage = () => {
           </Stack>
         </FormProvider>
         <PaginationBar
-          // pageNum={pageNum}
-          // setPageNum={setPageNum}
-          // totalPageNum={totalPage}
-          //deleetes these
-          // pageNum={pageNum}
-          // setPageNum={setPageNum}
-          // totalPageNum={totalPage}
+        // pageNum={pageNum}
+        // setPageNum={setPageNum}
+        // totalPageNum={totalPage}
+        //deleetes these
+        // pageNum={pageNum}
+        // setPageNum={setPageNum}
+        // totalPageNum={totalPage}
         />
       </Stack>
       <div>
