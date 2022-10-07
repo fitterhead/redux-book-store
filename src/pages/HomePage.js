@@ -1,16 +1,10 @@
-import {
-  setErrorMessageTo,
-  setLoadingTo,
-  setPageNumTo,
-  setQueryTo,
-} from "../service/books/slice";
+import {} from "../service/books/slice";
 import { setBooksTo } from "../service/books/slice";
 import React, { useState, useEffect } from "react";
 import { ClipLoader } from "react-spinners";
 import { useNavigate } from "react-router-dom";
 import PaginationBar from "../components/PaginationBar";
 import SearchForm from "../components/SearchForm";
-import api from "../apiService";
 import { FormProvider } from "../form";
 import { useForm } from "react-hook-form";
 import {
@@ -26,44 +20,25 @@ import {
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 const BACKEND_API = process.env.REACT_APP_BACKEND_API;
+
 const HomePage = () => {
   const dispatch = useDispatch();
-  // const [books, setBooks] = useState([]);
-  // console.log(books, "books");
-  // const [pageNum, setPageNum] = useState(1);
-  // const totalPage = 10;
-  // const limit = 10;
-  // const [loading, setLoading] = useState(false);
-  // const [query, setQuery] = useState("");
-  // const [errorMessage, setErrorMessage] = useState("");
-  //7 hooks.
   const navigate = useNavigate();
+
   const handleClickBook = (bookId) => {
     navigate(`/books/${bookId}`);
   };
+  const [pageNum, setPageNum] = useState(1);
   const books = useSelector((state) => state.books.books);
-  const status = useSelector((state) => state.books.status);
-  const booksarray = useSelector((state) => state.books);
-
-  if (status === "working") {
-    console.log(books, "books array");
-    console.log(booksarray, "books arrayyyy");
-  }
-
-  const pageNum = useSelector((state) => state.books.pageNum);
-  const query = useSelector((state) => state.books.query);
+  const totalPage = useSelector((state) => state.books.totalPage);
   const limit = useSelector((state) => state.books.limit);
   const loading = useSelector((state) => state.books.loading);
   const errorMessage = useSelector((state) => state.books.errorMessage);
-
-  // const setBooks = (value) => dispatch(setBooksTo(value))
-  const setErrorMessage = (value) => dispatch(setErrorMessageTo(value));
-  const setLoading = (value) => dispatch(setLoadingTo(value));
-  const setQuery = (value) => dispatch(setQueryTo(value));
+  const [query, setQuery] = useState("");
 
   useEffect(() => {
     dispatch(setBooksTo({ pageNum, limit, query }));
-  }, [dispatch, pageNum, limit, query, books]);
+  }, [dispatch, pageNum, limit, query]);
 
   const defaultValues = {
     searchQuery: "",
@@ -74,10 +49,8 @@ const HomePage = () => {
   const { handleSubmit } = methods;
   const onSubmit = (data) => {
     setQuery(data.searchQuery);
-    // const onSubmit = {() => dispatch (setQuery(data))}
-
-    //--------------form
   };
+
   return (
     <Container>
       <Stack sx={{ display: "flex", alignItems: "center", m: "2rem" }}>
@@ -96,55 +69,51 @@ const HomePage = () => {
             <SearchForm />
           </Stack>
         </FormProvider>
+        <div>
+          {loading ? (
+            <Box sx={{ textAlign: "center", color: "primary.main" }}>
+              <ClipLoader color="inherit" size={150} loading={true} />
+            </Box>
+          ) : (
+            <Stack
+              direction="row"
+              spacing={2}
+              justifyContent="space-around"
+              flexWrap="wrap"
+            >
+              {books.map((book) => (
+                <Card
+                  key={book.id}
+                  onClick={() => handleClickBook(book.id)}
+                  sx={{
+                    width: "12rem",
+                    height: "27rem",
+                    marginBottom: "2rem",
+                  }}
+                >
+                  <CardActionArea>
+                    <CardMedia
+                      component="img"
+                      image={`${BACKEND_API}/${book.imageLink}`}
+                      alt={`${book.title}`}
+                    />
+                    <CardContent>
+                      <Typography gutterBottom variant="h5" component="div">
+                        {`${book.title}`}
+                      </Typography>
+                    </CardContent>
+                  </CardActionArea>
+                </Card>
+              ))}
+            </Stack>
+          )}
+        </div>
         <PaginationBar
-        // pageNum={pageNum}
-        // setPageNum={setPageNum}
-        // totalPageNum={totalPage}
-        //deleetes these
-        // pageNum={pageNum}
-        // setPageNum={setPageNum}
-        // totalPageNum={totalPage}
+          pageNum={pageNum}
+          setPageNum={setPageNum}
+          totalPageNum={totalPage}
         />
       </Stack>
-      <div>
-        {loading ? (
-          <Box sx={{ textAlign: "center", color: "primary.main" }}>
-            <ClipLoader color="inherit" size={150} loading={true} />
-          </Box>
-        ) : (
-          <Stack
-            direction="row"
-            spacing={2}
-            justifyContent="space-around"
-            flexWrap="wrap"
-          >
-            {books.map((book) => (
-              <Card
-                key={book.id}
-                onClick={() => handleClickBook(book.id)}
-                sx={{
-                  width: "12rem",
-                  height: "27rem",
-                  marginBottom: "2rem",
-                }}
-              >
-                <CardActionArea>
-                  <CardMedia
-                    component="img"
-                    image={`${BACKEND_API}/${book.imageLink}`}
-                    alt={`${book.title}`}
-                  />
-                  <CardContent>
-                    <Typography gutterBottom variant="h5" component="div">
-                      {`${book.title}`}
-                    </Typography>
-                  </CardContent>
-                </CardActionArea>
-              </Card>
-            ))}
-          </Stack>
-        )}
-      </div>
     </Container>
   );
 };

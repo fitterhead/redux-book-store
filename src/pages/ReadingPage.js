@@ -1,12 +1,6 @@
-import {
-  setBooksTo,
-  setErrorMessageTo,
-  setLoadingTo,
-  setPageNumTo,
-  setQueryTo,
-} from "../service/books/slice";
-import React, { useState, useEffect } from "react";
-import { addThisToReadingList, removeThisBook } from "../service/books/slice";
+import {} from "../service/books/slice";
+import React from "react";
+import { removeThisBook } from "../service/books/slice";
 
 import {
   Container,
@@ -21,68 +15,23 @@ import {
 } from "@mui/material";
 import { ClipLoader } from "react-spinners";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
-import api from "../apiService";
 import { useDispatch, useSelector } from "react-redux";
 
 const BACKEND_API = process.env.REACT_APP_BACKEND_API;
 
-//import {removeThisBook} from ...
-
-//const removeBook = (bookId) => {dispatch(removeThisBook(bookID))}
-
 const ReadingPage = () => {
   const dispatch = useDispatch();
-  const books = useSelector((state) => state.savedBooks);
+  const books = useSelector((state) => state.books.savedBooks);
   const loading = useSelector((state) => state.loading);
-  const state = useSelector((state) => state.loading);
 
-  // const [books, setBooks] = useState([]);
-  // const [loading, setLoading] = useState(false);
-  // const [removedBookId, setRemovedBookId] = useState("");
   const navigate = useNavigate();
-  //import {removeThisBook} from ...
   const handleClickBook = (bookId) => {
     navigate(`/books/${bookId}`);
   };
 
-  // const removeBook = (bookId) => {
-  //   setRemovedBookId(bookId);
-  // };
   const removeBook = (bookId) => {
     dispatch(removeThisBook(bookId));
   };
-
-  // useEffect(() => {
-  //   if (removedBookId) return;
-  //   const fetchData = async () => {
-  //     setLoading(true);
-  //     try {
-  //       const res = await api.get(`/favorites`);
-  //       setBooks(res.data);
-  //     } catch (error) {
-  //       toast(error.message);
-  //     }
-  //     setLoading(false);
-  //   };
-  //   fetchData();
-  // }, [removedBookId]);
-
-  // useEffect(() => {
-  //   if (!removedBookId) return;
-  //   const fetchData = async () => {
-  //     setLoading(true);
-  //     try {
-  //       await api.delete(`/favorites/${removedBookId}`);
-  //       toast.success("The book has been removed");
-  //       setRemovedBookId("");
-  //     } catch (error) {
-  //       toast(error.message);
-  //     }
-  //     setLoading(false);
-  //   };
-  //   fetchData();
-  // }, [removedBookId]);
 
   return (
     <Container>
@@ -135,9 +84,6 @@ const ReadingPage = () => {
                     }}
                     size="small"
                     onClick={() => removeBook(book.id)}
-                    //dispatch(removeBook(book.id))
-                    //in slice.js:
-                    //removeBook: (state,action) => {...}
                   >
                     &times;
                   </Button>

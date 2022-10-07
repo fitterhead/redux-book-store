@@ -1,12 +1,10 @@
-//import combineReducer, configureStore
-//import bookSlideReducer
 import { configureStore } from "@reduxjs/toolkit";
-// import { combineReducers } from "redux";
-import bookSliceReducer  from "../service/books/slice.js";
+import bookSliceReducer from "../service/books/slice.js";
 
+const rootReducer = {
+  books: bookSliceReducer,
+};
 
 export const store = configureStore({
-  reducer: {
-    books: bookSliceReducer,
-  },
-})
+  reducer: rootReducer,
+});
