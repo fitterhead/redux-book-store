@@ -42,10 +42,26 @@ export const getBookDetail = createAsyncThunk(
   }
 );
 
+export const getReadingList = createAsyncThunk(
+  "book/getReadingList",
+  async () => {
+    const response = await api.get(`/favorites`);
+    return response.data;
+  }
+);
+
 export const removeThisBook = createAsyncThunk(
   "books/removeThisBook",
   async (removedBookId) => {
     const response = await api.delete(`/favorites/${removedBookId}`);
+
+    // const sumResponse = {
+
+    //   removedBookId: removedBookId,
+    // };
+
+    console.log(removedBookId, "sumResponse");
+
     return response.data;
   }
 );
@@ -53,29 +69,7 @@ export const removeThisBook = createAsyncThunk(
 export const booksSlice = createSlice({
   name: "books",
   initialState,
-  reducers: {
-    setSingleBookTo: (state, action) => {
-      state.singleBook = action.payload;
-      console.log(action.payload, "singleBook");
-      state.errorMessage = "";
-    },
-
-    setErrorMessageTo: (state, action) => {
-      state.ErrorMessage = action.payload;
-    },
-
-    setLoadingTo: (state, action) => {
-      state.loading = action.payload;
-    },
-
-    setQueryTo: (state, action) => {
-      state.query = action.payload;
-    },
-
-    setPageNumTo: (state, action) => {
-      state.pageNum = action.payload;
-    },
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(setBooksTo.pending, (state) => {
@@ -114,8 +108,7 @@ export const booksSlice = createSlice({
         state.status = "loading";
       })
       .addCase(removeThisBook.fulfilled, (state, action) => {
-        console.log(action.payload, "remove book data");
-        // state.books = action.payload;
+        state.removedBookId = action.payload;
         state.errorMessage = "";
         state.loading = null;
       })
@@ -138,6 +131,18 @@ export const booksSlice = createSlice({
       .addCase(getBookDetail.rejected, (state, action) => {
         state.status = "Failed to remove book";
         state.loading = null;
+      });
+
+    builder
+      .addCase(getReadingList.pending, (state) => {
+        state.status = "pending";
+      })
+      .addCase(getReadingList.fulfilled, (state, action) => {
+        state.status = null;
+        state.savedBooks = action.payload;
+      })
+      .addCase(getReadingList.rejected, (state, action) => {
+        state.status = "failed";
       });
   },
 });

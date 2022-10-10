@@ -1,7 +1,9 @@
 import {} from "../service/books/slice";
 import React from "react";
 import { removeThisBook } from "../service/books/slice";
-
+import { useEffect } from "react";
+import { getReadingList } from "../service/books/slice";
+import { useState } from "react";
 import {
   Container,
   Button,
@@ -20,9 +22,10 @@ import { useDispatch, useSelector } from "react-redux";
 const BACKEND_API = process.env.REACT_APP_BACKEND_API;
 
 const ReadingPage = () => {
+  const [removedBookId, setRemovedBookId] = useState("");
   const dispatch = useDispatch();
   const books = useSelector((state) => state.books.savedBooks);
-  const loading = useSelector((state) => state.loading);
+  const loading = useSelector((state) => state.books.loading);
 
   const navigate = useNavigate();
   const handleClickBook = (bookId) => {
@@ -30,8 +33,20 @@ const ReadingPage = () => {
   };
 
   const removeBook = (bookId) => {
-    dispatch(removeThisBook(bookId));
+    setRemovedBookId(bookId);
   };
+
+  useEffect(() => {
+    if (removedBookId) return;
+    dispatch(getReadingList());
+  }, [dispatch, removedBookId]);
+
+  useEffect(() => {
+    if (!removedBookId) return;
+    dispatch(removeThisBook(removedBookId));
+    setRemovedBookId("");
+  }, [dispatch, removedBookId]);
+  console.log(removeThisBook);
 
   return (
     <Container>
